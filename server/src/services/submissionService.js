@@ -5,7 +5,7 @@ import { validateCandidateDetails } from './candidateDetailsService.js'
 
 const submissionTracker = new Set()
 
-export function validateSubmissionPayload(payload, authenticatedUserEmail) {
+export function validateSubmissionPayload(payload) {
   const errors = {}
 
   if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
@@ -21,16 +21,6 @@ export function validateSubmissionPayload(payload, authenticatedUserEmail) {
 
   if (!candidateResult.isValid) {
     errors.candidateDetails = candidateResult.errors
-  }
-
-  if (
-    candidateResult.candidateDetails.email &&
-    candidateResult.candidateDetails.email !== authenticatedUserEmail
-  ) {
-    errors.candidateDetails = {
-      ...(errors.candidateDetails || {}),
-      email: 'Candidate email must match the authenticated session.',
-    }
   }
 
   if (payload.assessmentId !== assessmentDefinition.metadata.assessmentId) {

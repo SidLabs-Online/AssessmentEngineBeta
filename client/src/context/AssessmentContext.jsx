@@ -16,6 +16,28 @@ const initialCandidateDetails = {
   roleApplied: '',
 }
 
+function getFirstErrorMessage(details) {
+  if (!details || typeof details !== 'object') {
+    return ''
+  }
+
+  for (const value of Object.values(details)) {
+    if (typeof value === 'string' && value) {
+      return value
+    }
+
+    if (value && typeof value === 'object') {
+      const nestedMessage = getFirstErrorMessage(value)
+
+      if (nestedMessage) {
+        return nestedMessage
+      }
+    }
+  }
+
+  return ''
+}
+
 export function AssessmentProvider({ children }) {
   const [candidateDetails, setCandidateDetails] = useState(initialCandidateDetails)
   const [assessmentSession, setAssessmentSession] = useState(null)
@@ -106,9 +128,13 @@ export function AssessmentProvider({ children }) {
         result,
       }
     } catch (error) {
+      const validationMessage = getFirstErrorMessage(error.details)
+
       setCompletionState({
         message:
-          error.message || 'The assessment could not be submitted right now.',
+          validationMessage ||
+          error.message ||
+          'The assessment could not be submitted right now.',
         status: 'error',
       })
       throw error

@@ -94,13 +94,13 @@ test('POST /api/auth/admin/login rejects invalid credentials', async () => {
   assert.equal(response.body.message, 'Invalid email or password.')
 })
 
-test('GET /api/auth/session requires an authenticated cookie', async () => {
+test('GET /api/auth/session returns a null user without an authenticated cookie', async () => {
   const app = createApp()
 
   const response = await request(app).get('/api/auth/session')
 
-  assert.equal(response.statusCode, 401)
-  assert.equal(response.body.message, 'Authentication required.')
+  assert.equal(response.statusCode, 200)
+  assert.equal(response.body.user, null)
 })
 
 test('GET /api/auth/admin/session rejects non-admin authenticated users', async () => {

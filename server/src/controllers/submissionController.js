@@ -8,7 +8,7 @@ import {
 export async function submitAssessment(request, response) {
   console.info('[server] submission started')
 
-  const validation = validateSubmissionPayload(request.body, request.user.email)
+  const validation = validateSubmissionPayload(request.body)
 
   if (!validation.isValid) {
     console.warn('[server] submission invalid')

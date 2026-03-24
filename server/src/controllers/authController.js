@@ -1,4 +1,8 @@
-import { COOKIE_NAME, getAuthCookieOptions } from '../config/auth.js'
+import {
+  COOKIE_NAME,
+  getAuthCookieOptions,
+  verifyAuthToken,
+} from '../config/auth.js'
 import {
   checkAdminPasswordChangeThrottle,
   updateAdminPassword,
@@ -83,7 +87,23 @@ export async function loginAdmin(request, response) {
 
 export function getSession(request, response) {
   console.info('[server] auth route hit: session')
-  return response.status(200).json(buildSessionPayload(request))
+  const token = request.cookies?.[COOKIE_NAME]
+
+  if (!token) {
+    return response.status(200).json({
+      user: null,
+    })
+  }
+
+  try {
+    request.user = verifyAuthToken(token)
+
+    return response.status(200).json(buildSessionPayload(request))
+  } catch {
+    return response.status(200).json({
+      user: null,
+    })
+  }
 }
 
 export function getAdminSession(request, response) {

@@ -74,6 +74,22 @@ test('POST /api/submissions accepts a valid assessment submission', async () => 
   assert.ok(response.body.data.submissionKey)
 })
 
+test('POST /api/submissions accepts a candidate email different from the shared login email', async () => {
+  const app = createApp()
+  const cookie = await loginAndGetCookie(app)
+  const payload = buildValidPayload()
+
+  payload.candidateDetails.email = 'applicant@sidlabs.net'
+
+  const response = await request(app)
+    .post('/api/submissions')
+    .set('Cookie', cookie)
+    .send(payload)
+
+  assert.equal(response.statusCode, 201)
+  assert.equal(response.body.success, true)
+})
+
 test('POST /api/submissions rejects invalid answer payloads', async () => {
   const app = createApp()
   const cookie = await loginAndGetCookie(app)

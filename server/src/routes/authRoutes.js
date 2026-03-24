@@ -14,7 +14,7 @@ const router = Router()
 router.post('/login', login)
 router.post('/admin/login', loginAdmin)
 router.post('/admin/password', ...requireAdmin, changeAdminPassword)
-router.get('/session', requireAuth, getSession)
+router.get('/session', getSession)
 router.get('/admin/session', requireAdmin, getAdminSession)
 router.post('/logout', logout)
 
