@@ -4,7 +4,7 @@ function BrandMark({ compact = false }) {
       <img
         alt="SidLabs logo"
         className="brand-mark__image"
-        src="https://res.cloudinary.com/dquk8vwxi/image/upload/v1771474414/SidLabs_Logo_z1nfoz.jpg"
+        src="https://res.cloudinary.com/dquk8vwxi/image/upload/v1771474396/SL_Square_ooor6j.png"
       />
       <div className="brand-mark__copy">
         <strong>SidLabs</strong>
