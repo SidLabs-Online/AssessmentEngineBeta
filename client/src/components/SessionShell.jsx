@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { BRAND_LINE } from '../config/constants'
+import BrandMark from './BrandMark'
 import { useAuth } from '../context/useAuth'
 
 function SessionShell({
@@ -21,8 +21,8 @@ function SessionShell({
   return (
     <main className="app-shell">
       <section className="shell-topbar">
-        <div>
-          <p className="eyebrow">{BRAND_LINE}</p>
+        <div className="shell-topbar__brand">
+          <BrandMark compact />
           <p className="shell-topbar__meta">{user?.email}</p>
         </div>
 

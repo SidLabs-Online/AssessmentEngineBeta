@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { ADMIN_LOGIN_HINT, BRAND_LINE } from '../config/constants'
+import BrandMark from '../components/BrandMark'
 import { useAuth } from '../context/useAuth'
 import { validateLoginForm } from '../utils/loginValidation'
 
@@ -22,7 +23,7 @@ function AdminLoginPage() {
     return (
       <main className="auth-shell auth-shell--admin">
         <section className="auth-card auth-card--compact auth-card--admin">
-          <p className="eyebrow">{BRAND_LINE}</p>
+          <BrandMark compact />
           <h1>Restoring admin session</h1>
           <p className="auth-support-copy">
             Checking whether an active evaluator session already exists.
@@ -79,6 +80,7 @@ function AdminLoginPage() {
     <main className="auth-shell auth-shell--admin">
       <section className="auth-card auth-card--admin">
         <div className="auth-card__header">
+          <BrandMark compact />
           <p className="eyebrow">{BRAND_LINE}</p>
           <h1>Admin login</h1>
           <p className="auth-support-copy">

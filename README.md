@@ -12,6 +12,7 @@ The app currently supports:
 - timed submission flow
 - MongoDB-backed submission storage
 - thank-you and exit flow
+- shared SidLabs footer, contact block, and CSS-built brand treatment
 
 ## Project Overview
 
@@ -33,6 +34,7 @@ The current implementation prioritizes:
 - Context-based state for auth and assessment session data
 - Plain CSS with shared design tokens in `theme.css`
 - JSON-backed assessment definition loaded from local data
+- shared layout branding with a CSS-rendered SidLabs mark and responsive footer
 
 ### Backend
 
@@ -233,6 +235,18 @@ npm run build
 npm run test
 npm run lint
 ```
+
+## Branding And Footer Notes
+
+The frontend now includes:
+- a CSS-built SidLabs `SL` brand mark used across auth and in-app shells
+- a shared footer rendered across the app
+- responsive footer/contact blocks tuned for mobile, tablet, and desktop
+
+The footer content mirrors the public SidLabs site contact and quick-link information:
+- `connect@sidlabs.net`
+- `+91 9805737808 (WhatsApp only)`
+- `2-A/3 S/F, Front Side, Asaf Ali Rd, Turkman Gate, New Delhi, 110002, India`
 
 ## Test Commands
 

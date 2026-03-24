@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import AppRoutes from './AppRoutes'
+import SiteFooter from './components/SiteFooter'
 import { AssessmentContext } from './context/assessmentContextObject'
 import { assessmentDefinition } from './data/assessmentDefinition'
 import { AuthContext } from './context/authContextObject'
@@ -277,6 +278,13 @@ describe('assessment flow', () => {
     )
 
     expect(screen.getByText('Candidate login')).toBeInTheDocument()
+  })
+
+  it('renders the shared sidlabs footer on public routes', () => {
+    render(<SiteFooter />)
+
+    expect(screen.getByText('Get In Touch')).toBeInTheDocument()
+    expect(screen.getByText(/connect@sidlabs.net/i)).toBeInTheDocument()
   })
 
   it('keeps unauthenticated users out of admin routes', () => {

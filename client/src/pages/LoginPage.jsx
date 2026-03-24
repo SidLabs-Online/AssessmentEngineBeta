@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { BRAND_LINE, DEMO_CREDENTIAL_HINT } from '../config/constants'
+import BrandMark from '../components/BrandMark'
 import { useAuth } from '../context/useAuth'
 import { validateLoginForm } from '../utils/loginValidation'
 
@@ -19,7 +20,7 @@ function LoginPage() {
     return (
       <main className="auth-shell">
         <section className="auth-card auth-card--compact">
-          <p className="eyebrow">{BRAND_LINE}</p>
+          <BrandMark compact />
           <h1>Restoring session</h1>
           <p className="auth-support-copy">
             Checking whether an active candidate session already exists.
@@ -76,6 +77,7 @@ function LoginPage() {
     <main className="auth-shell">
       <section className="auth-card">
         <div className="auth-card__header">
+          <BrandMark compact />
           <p className="eyebrow">{BRAND_LINE}</p>
           <h1>Candidate login</h1>
           <p className="auth-support-copy">
