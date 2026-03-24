@@ -5,15 +5,14 @@ AssessmentEngine is a lightweight MERN applicant assessment platform branded as:
 `This research is powered by SidLabs LLP`
 
 The app currently supports:
-- candidate login with demo credentials
+- candidate login with environment-configured credentials
 - protected frontend assessment flow
 - candidate intake form with consent gate
 - JSON-driven assessment instructions and MCQ engine
 - timed submission flow
 - MongoDB-backed submission storage
 - thank-you and exit flow
-- shared SidLabs footer, contact block, and CSS-built brand treatment
- - shared SidLabs footer, contact block, and exact SidLabs logo treatment
+- shared SidLabs footer, contact block, and exact SidLabs logo treatment
 
 ## Project Overview
 
@@ -272,11 +271,11 @@ npm --prefix server run test
 npm --prefix server run lint
 ```
 
-## Demo Login And Seed Notes
+## Login And Seed Notes
 
 There is no database seed script in the current implementation.
 
-Authentication uses env-driven demo credentials:
+Candidate authentication uses env-driven credentials:
 - email: `candidate@sidlabs.com`
 - password: `SidLabs@2026`
 
@@ -290,7 +289,7 @@ Admin seed values:
 - `ADMIN_EMAIL`
 - `ADMIN_INITIAL_PASSWORD`
 
-Current default admin identity:
+Current configured admin identity:
 - `evaluator@sidlabs.net`
 
 Current local admin seed password:
@@ -347,7 +346,7 @@ Returns API health status.
 
 ### `POST /api/auth/login`
 
-Authenticates the demo candidate and sets the auth cookie.
+Authenticates the configured candidate user and sets the auth cookie.
 
 Request body:
 
@@ -411,7 +410,7 @@ Main sections validated:
 
 ## Assumptions
 
-- demo auth is acceptable for the current screening workflow stage
+- env-configured candidate auth is acceptable for the current screening workflow stage
 - assessment questions are loaded from a local JSON file, not an admin CMS
 - one active assessment definition is sufficient for the current product scope
 - MongoDB is the canonical persistence path for submissions
@@ -436,7 +435,7 @@ Main sections validated:
 
 ### Production Follow-Ups
 
-- move demo auth to persisted users or invite-based credentials
+- move candidate auth to persisted users or invite-based credentials
 - harden cookie settings for production domain/HTTPS
 - add submission observability and audit logging
 - add retry/queue behavior if external integrations are introduced later
@@ -459,7 +458,7 @@ Main sections validated:
 3. Install dependencies for `client` and `server`.
 4. Start backend with `npm run dev:server`.
 5. Start frontend with `npm run dev:client`.
-6. Log in with the configured demo credentials.
+6. Log in with the configured candidate or admin credentials from this README.
 7. Complete candidate details and consent.
 8. Start the assessment and answer a few questions.
 9. Submit and confirm the thank-you page appears.
@@ -487,4 +486,4 @@ If you want to split the work into reviewable commits, this sequence is reasonab
 - The frontend flow is complete enough for end-to-end local testing.
 - The backend already validates candidate details and submission payload shape before storage.
 - Tests are lightweight but cover the critical user and validation paths requested so far.
-- Direct git push was not performed in this environment. No remote push has been claimed or simulated.
+- Latest remote push in this workspace included the UI branding update and login-hint removal. Future engineers should still verify `git status` and `git remote -v` locally before shipping new changes.
