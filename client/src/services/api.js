@@ -2,14 +2,27 @@ const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') || 'http://localhost:5001'
 
 async function request(path, options = {}) {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers || {}),
-    },
-    ...options,
-  })
+  let response
+
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options.headers || {}),
+      },
+      ...options,
+    })
+  } catch (error) {
+    const networkError = new Error(
+      `Unable to reach the server at ${API_BASE_URL}. Start the backend and try again.`,
+    )
+
+    networkError.code = 'NETWORK_ERROR'
+    networkError.cause = error
+
+    throw networkError
+  }
 
   let payload = null
 
