@@ -1,5 +1,10 @@
 import { signAuthToken } from '../config/auth.js'
 import { env } from '../config/env.js'
+import {
+  findAdminUserByEmail,
+  toAdminSessionUser,
+  verifyPassword,
+} from './adminAccountService.js'
 
 const demoUser = {
   email: env.demoUserEmail,
@@ -42,5 +47,31 @@ export async function authenticateCandidate({ email, password }) {
       sub: demoUser.id,
     }),
     user: demoUser,
+  }
+}
+
+export async function authenticateAdmin({ email, password }) {
+  const adminUser = await findAdminUserByEmail(email)
+
+  if (!adminUser) {
+    return null
+  }
+
+  const isPasswordValid = await verifyPassword(password, adminUser.passwordHash)
+
+  if (!isPasswordValid) {
+    return null
+  }
+
+  const sessionUser = toAdminSessionUser(adminUser)
+
+  return {
+    token: signAuthToken({
+      email: sessionUser.email,
+      name: sessionUser.name,
+      role: sessionUser.role,
+      sub: sessionUser.id,
+    }),
+    user: sessionUser,
   }
 }

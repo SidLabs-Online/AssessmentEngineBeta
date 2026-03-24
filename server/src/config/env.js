@@ -11,6 +11,8 @@ dotenv.config({
 })
 
 export const env = {
+  adminEmail: process.env.ADMIN_EMAIL || 'evaluator@sidlabs.net',
+  adminInitialPassword: process.env.ADMIN_INITIAL_PASSWORD || '',
   clientOrigin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
   demoUserEmail: process.env.DEMO_USER_EMAIL || 'candidate@sidlabs.com',
   demoUserPassword: process.env.DEMO_USER_PASSWORD || 'SidLabs@2026',

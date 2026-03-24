@@ -1,28 +1,31 @@
 import { useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { BRAND_LINE, DEMO_CREDENTIAL_HINT } from '../config/constants'
+import { ADMIN_LOGIN_HINT, BRAND_LINE } from '../config/constants'
 import { useAuth } from '../context/useAuth'
 import { validateLoginForm } from '../utils/loginValidation'
 
-function LoginPage() {
+function AdminLoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { isAuthenticated, isAuthLoading, login, user } = useAuth()
-  const [values, setValues] = useState({ email: '', password: '' })
+  const { isAuthenticated, isAuthLoading, loginAdmin, user } = useAuth()
+  const [values, setValues] = useState({
+    email: ADMIN_LOGIN_HINT.email,
+    password: '',
+  })
   const [errors, setErrors] = useState({})
   const [submitError, setSubmitError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const redirectTarget = location.state?.from || '/dashboard'
+  const redirectTarget = location.state?.from || '/admin/dashboard'
 
   if (isAuthLoading) {
     return (
-      <main className="auth-shell">
-        <section className="auth-card auth-card--compact">
+      <main className="auth-shell auth-shell--admin">
+        <section className="auth-card auth-card--compact auth-card--admin">
           <p className="eyebrow">{BRAND_LINE}</p>
-          <h1>Restoring session</h1>
+          <h1>Restoring admin session</h1>
           <p className="auth-support-copy">
-            Checking whether an active candidate session already exists.
+            Checking whether an active evaluator session already exists.
           </p>
         </section>
       </main>
@@ -60,7 +63,7 @@ function LoginPage() {
     try {
       setIsSubmitting(true)
       setSubmitError('')
-      await login({
+      await loginAdmin({
         email: values.email.trim(),
         password: values.password,
       })
@@ -73,31 +76,32 @@ function LoginPage() {
   }
 
   return (
-    <main className="auth-shell">
-      <section className="auth-card">
+    <main className="auth-shell auth-shell--admin">
+      <section className="auth-card auth-card--admin">
         <div className="auth-card__header">
           <p className="eyebrow">{BRAND_LINE}</p>
-          <h1>Candidate login</h1>
+          <h1>Admin login</h1>
           <p className="auth-support-copy">
-            Sign in with your assigned assessment credentials to continue.
+            Sign in as a SidLabs evaluator to review candidate assessments and
+            administration data.
           </p>
         </div>
 
-        <div className="auth-card__demo">
-          <p className="auth-card__demo-label">Demo credentials</p>
-          <p>{DEMO_CREDENTIAL_HINT.email}</p>
-          <p>{DEMO_CREDENTIAL_HINT.password}</p>
+        <div className="auth-card__demo auth-card__demo--admin">
+          <p className="auth-card__demo-label">Admin identity</p>
+          <p>{ADMIN_LOGIN_HINT.email}</p>
+          <p>Password is provisioned securely from backend environment setup.</p>
         </div>
 
         <form className="auth-form" noValidate onSubmit={handleSubmit}>
           <label className="field">
-            <span>Email address</span>
+            <span>Admin email</span>
             <input
               autoComplete="email"
               className={errors.email ? 'input input--error' : 'input'}
               name="email"
               onChange={handleChange}
-              placeholder="candidate@sidlabs.com"
+              placeholder="evaluator@sidlabs.net"
               type="email"
               value={values.email}
             />
@@ -111,7 +115,7 @@ function LoginPage() {
               className={errors.password ? 'input input--error' : 'input'}
               name="password"
               onChange={handleChange}
-              placeholder="Enter your password"
+              placeholder="Enter your admin password"
               type="password"
               value={values.password}
             />
@@ -126,17 +130,17 @@ function LoginPage() {
             </div>
           ) : null}
 
-          <button className="primary-button" disabled={isSubmitting} type="submit">
-            {isSubmitting ? 'Signing in...' : 'Continue to dashboard'}
+          <button className="primary-button primary-button--admin" disabled={isSubmitting} type="submit">
+            {isSubmitting ? 'Signing in...' : 'Continue to admin dashboard'}
           </button>
         </form>
 
-        <Link className="auth-inline-link" to="/admin/login">
-          Sign in as an evaluator
+        <Link className="auth-inline-link" to="/login">
+          Return to candidate login
         </Link>
       </section>
     </main>
   )
 }
 
-export default LoginPage
+export default AdminLoginPage

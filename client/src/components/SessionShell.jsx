@@ -2,13 +2,20 @@ import { useNavigate } from 'react-router-dom'
 import { BRAND_LINE } from '../config/constants'
 import { useAuth } from '../context/useAuth'
 
-function SessionShell({ children, eyebrow, title, subtitle, action }) {
+function SessionShell({
+  children,
+  eyebrow,
+  title,
+  subtitle,
+  action,
+  logoutRedirectTo = '/login',
+}) {
   const navigate = useNavigate()
   const { logout, user } = useAuth()
 
   async function handleLogout() {
     await logout()
-    navigate('/login', { replace: true })
+    navigate(logoutRedirectTo, { replace: true })
   }
 
   return (

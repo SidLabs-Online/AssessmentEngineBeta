@@ -1,9 +1,14 @@
 import { createApp } from './app.js'
 import { connectDatabase } from './config/db.js'
 import { env } from './config/env.js'
+import { ensureSeedAdminUser } from './services/adminAccountService.js'
 
 export async function startServer() {
-  await connectDatabase()
+  const isDatabaseConnected = await connectDatabase()
+
+  if (isDatabaseConnected) {
+    await ensureSeedAdminUser()
+  }
 
   const app = createApp()
 

@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react'
-import { fetchSession, loginCandidate, logoutCandidate } from '../services/api'
+import {
+  fetchSession,
+  loginAdmin as loginAdminRequest,
+  loginCandidate,
+  logoutCandidate,
+} from '../services/api'
 import { AuthContext } from './authContextObject'
 
 export function AuthProvider({ children }) {
@@ -40,14 +45,22 @@ export function AuthProvider({ children }) {
     return payload.user
   }
 
+  async function loginAdmin(credentials) {
+    const payload = await loginAdminRequest(credentials)
+    setUser(payload.user)
+    return payload.user
+  }
+
   async function logout() {
     await logoutCandidate()
     setUser(null)
   }
 
   const value = {
+    isAdmin: user?.role === 'admin',
     isAuthenticated: Boolean(user),
     isAuthLoading,
+    loginAdmin,
     login,
     logout,
     user,

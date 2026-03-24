@@ -10,6 +10,7 @@ import {
   formatRemainingTime,
   getSecondsRemaining,
 } from './utils/assessmentEngine'
+import { validateAdminPasswordForm } from './utils/adminPasswordValidation'
 import { validateCandidateDetails } from './utils/candidateDetailsValidation'
 import { validateLoginForm } from './utils/loginValidation'
 
@@ -59,6 +60,20 @@ describe('candidate details validation', () => {
   })
 })
 
+describe('admin password validation', () => {
+  it('returns a mismatch error when confirmation differs', () => {
+    expect(
+      validateAdminPasswordForm({
+        confirmNewPassword: 'DifferentAdmin!2026',
+        currentPassword: 'AdminStageA4!Pass',
+        newPassword: 'ChangedAdmin!2026',
+      }),
+    ).toEqual({
+      confirmNewPassword: 'Confirmation does not match the new password.',
+    })
+  })
+})
+
 describe('assessment timer utilities', () => {
   it('initializes the timer from assessment metadata', () => {
     const session = createAssessmentSession(assessmentDefinition.metadata, 1000)
@@ -79,12 +94,29 @@ describe('assessment timer utilities', () => {
 describe('assessment flow', () => {
   const authState = {
     isAuthenticated: true,
+    isAdmin: false,
     isAuthLoading: false,
+    loginAdmin: async () => {},
     login: async () => {},
     logout: async () => {},
     user: {
       email: 'candidate@sidlabs.com',
       name: 'SidLabs Demo Candidate',
+      role: 'candidate',
+    },
+  }
+
+  const adminAuthState = {
+    isAuthenticated: true,
+    isAdmin: true,
+    isAuthLoading: false,
+    loginAdmin: async () => {},
+    login: async () => {},
+    logout: async () => {},
+    user: {
+      email: 'evaluator@sidlabs.net',
+      name: 'SidLabs Evaluator',
+      role: 'admin',
     },
   }
 
@@ -124,6 +156,8 @@ describe('assessment flow', () => {
 
   afterEach(() => {
     vi.useRealTimers()
+    vi.restoreAllMocks()
+    vi.unstubAllGlobals()
   })
 
   it('renders metadata on the explainer page', () => {
@@ -232,7 +266,9 @@ describe('assessment flow', () => {
       '/assessment',
       {
         isAuthenticated: false,
+        isAdmin: false,
         isAuthLoading: false,
+        loginAdmin: async () => {},
         login: async () => {},
         logout: async () => {},
         user: null,
@@ -241,5 +277,139 @@ describe('assessment flow', () => {
     )
 
     expect(screen.getByText('Candidate login')).toBeInTheDocument()
+  })
+
+  it('keeps unauthenticated users out of admin routes', () => {
+    renderWithProviders(
+      '/admin/dashboard',
+      {
+        isAuthenticated: false,
+        isAdmin: false,
+        isAuthLoading: false,
+        loginAdmin: async () => {},
+        login: async () => {},
+        logout: async () => {},
+        user: null,
+      },
+      baseAssessmentState,
+    )
+
+    expect(screen.getByText('Admin login')).toBeInTheDocument()
+  })
+
+  it('redirects candidate users away from admin-only routes', () => {
+    renderWithProviders('/admin/dashboard', authState, baseAssessmentState)
+
+    expect(screen.getByText('Start Assessment')).toBeInTheDocument()
+    expect(screen.queryByText('Admin Dashboard')).not.toBeInTheDocument()
+  })
+
+  it('redirects admin users away from candidate-only routes', () => {
+    renderWithProviders('/dashboard', adminAuthState, baseAssessmentState)
+
+    expect(screen.getByText('Admin Dashboard')).toBeInTheDocument()
+    expect(screen.queryByText('Start Assessment')).not.toBeInTheDocument()
+  })
+
+  it('renders fetched access log rows on the admin dashboard', async () => {
+    vi.useRealTimers()
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          data: {
+            accessOverview: {
+              recentAccess: [
+                {
+                  accessedAt: '2026-03-24T13:25:00.000Z',
+                  actorEmail: 'evaluator@sidlabs.net',
+                  ipAddress: '203.0.113.10',
+                  method: 'POST',
+                  path: '/api/auth/admin/login',
+                  sourceLabel: 'Bengaluru, KA, IN',
+                  statusCode: 200,
+                  userRole: 'admin',
+                },
+              ],
+              uniqueIpCount: 3,
+            },
+            activity: [],
+            latestSubmissions: [],
+            overview: {
+              completedAssessments: 0,
+              completionRate: 0,
+              expiredAssessments: 0,
+              incompleteAttempts: null,
+              incompleteTracked: false,
+              totalCandidates: 0,
+              totalSubmissions: 0,
+            },
+            statusBreakdown: [],
+          },
+          success: true,
+        }),
+      }),
+    )
+
+    renderWithProviders('/admin/dashboard', adminAuthState, baseAssessmentState)
+
+    expect(await screen.findByText('203.0.113.10')).toBeInTheDocument()
+    expect(screen.getByText('Recent IP and source signals')).toBeInTheDocument()
+  })
+
+  it('renders fetched admin submission rows in the table view', async () => {
+    vi.useRealTimers()
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          data: {
+            filters: {
+              query: '',
+              status: 'all',
+            },
+            items: [
+              {
+                age: '24',
+                assessmentId: 'platoputer-research-assistant-pre-assessment',
+                assessmentTitle: 'Platoputer Research Assistant Pre-Assessment',
+                candidateEmail: 'candidate@sidlabs.com',
+                candidateName: 'Sid Demo',
+                completionStatus: 'Completed manually',
+                location: 'Bengaluru',
+                roleApplied: 'Research Analyst',
+                score: 18,
+                submissionTime: '2026-03-24T14:00:00.000Z',
+              },
+            ],
+            pagination: {
+              hasNextPage: false,
+              hasPreviousPage: false,
+              page: 1,
+              totalItems: 1,
+              totalPages: 1,
+            },
+          },
+          success: true,
+        }),
+      }),
+    )
+
+    renderWithProviders('/admin/submissions', adminAuthState, baseAssessmentState)
+
+    expect(await screen.findByText('Sid Demo')).toBeInTheDocument()
+    expect(screen.getByText('Research Analyst')).toBeInTheDocument()
+    expect(screen.getAllByText('Completed manually')).toHaveLength(2)
+  })
+
+  it('renders the admin settings password form for admin users', () => {
+    renderWithProviders('/admin/settings', adminAuthState, baseAssessmentState)
+
+    expect(screen.getByText('Change admin password')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Update password' })).toBeInTheDocument()
   })
 })

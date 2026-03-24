@@ -150,6 +150,8 @@ cp .env.example .env
 
 Current required variables:
 
+- `ADMIN_EMAIL`
+- `ADMIN_INITIAL_PASSWORD`
 - `VITE_API_BASE_URL`
 - `PORT`
 - `NODE_ENV`
@@ -164,6 +166,7 @@ Current required variables:
 The current `.env.example` covers all environment variables required by the checked-in code paths.
 
 Included:
+- admin seed email and initial password
 - frontend API base URL
 - backend port and client origin
 - Mongo connection URI
@@ -264,9 +267,49 @@ Authentication uses env-driven demo credentials:
 
 These values come from `.env` and are validated in the backend auth service. If another engineer wants persisted users later, that can replace the demo credential check without changing the frontend route flow.
 
+## Admin Notes
+
+Admin authentication is separate from candidate login.
+
+Admin seed values:
+- `ADMIN_EMAIL`
+- `ADMIN_INITIAL_PASSWORD`
+
+Current default admin identity:
+- `evaluator@sidlabs.net`
+
+Behavior:
+- the admin account is seeded on server startup when MongoDB is connected
+- only the hashed admin password is stored in MongoDB
+- once the admin account exists, startup does not overwrite the password
+- the admin can rotate the password later through `/admin/settings`
+
+Admin frontend routes:
+- `/admin/login`
+- `/admin/dashboard`
+- `/admin/submissions`
+- `/admin/settings`
+
+Admin backend routes:
+- `POST /api/auth/admin/login`
+- `GET /api/auth/admin/session`
+- `POST /api/auth/admin/password`
+- `GET /api/admin/dashboard`
+- `GET /api/admin/submissions`
+
+Access logging notes:
+- backend API access events are logged with IP and proxy-derived source headers when available
+- recent access signals are shown on the admin dashboard
+- health checks are excluded from access-log capture to avoid noise
+
 ## Frontend Route Flow
 
 - `/` -> redirects to `/login`
+- `/admin` -> redirects to `/admin/login`
+- `/admin/login` -> evaluator login
+- `/admin/dashboard` -> protected admin dashboard
+- `/admin/submissions` -> protected admin table view
+- `/admin/settings` -> protected admin settings and password update
 - `/login` -> candidate login
 - `/dashboard` -> protected post-login entry page
 - `/candidate-details` -> protected intake form
@@ -304,6 +347,26 @@ Returns the currently authenticated session if the JWT cookie is valid.
 ### `POST /api/auth/logout`
 
 Clears the auth cookie.
+
+### `POST /api/auth/admin/login`
+
+Authenticates the seeded admin evaluator and sets the auth cookie.
+
+### `GET /api/auth/admin/session`
+
+Returns the authenticated admin session if the JWT cookie is valid and the role is `admin`.
+
+### `POST /api/auth/admin/password`
+
+Protected admin route. Validates the current password, enforces strong new-password rules, hashes the replacement password, and updates the stored admin record.
+
+### `GET /api/admin/dashboard`
+
+Protected admin route. Returns overview metrics, recent submissions, recent activity, and recent access-log/IP signals for the evaluator dashboard.
+
+### `GET /api/admin/submissions`
+
+Protected admin route. Returns paginated submission rows with lightweight search and status filtering.
 
 ### `POST /api/candidate-details/validate`
 

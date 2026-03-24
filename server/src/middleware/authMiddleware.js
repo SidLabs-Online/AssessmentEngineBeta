@@ -18,3 +18,20 @@ export function requireAuth(request, response, next) {
     })
   }
 }
+
+export function requireRole(...allowedRoles) {
+  return function enforceRole(request, response, next) {
+    if (!request.user || !allowedRoles.includes(request.user.role)) {
+      console.warn(
+        `[server] unauthorized access attempt: ${request.user?.email || 'anonymous'} -> ${request.originalUrl}`,
+      )
+      return response.status(403).json({
+        message: 'You do not have access to this resource.',
+      })
+    }
+
+    return next()
+  }
+}
+
+export const requireAdmin = [requireAuth, requireRole('admin')]

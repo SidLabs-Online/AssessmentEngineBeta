@@ -20,9 +20,13 @@ async function request(path, options = {}) {
   }
 
   if (!response.ok) {
-    throw new Error(
+    const error = new Error(
       payload?.message || `Request failed with status ${response.status}`,
     )
+
+    error.details = payload?.errors || null
+
+    throw error
   }
 
   return payload
@@ -39,9 +43,51 @@ export function loginCandidate(credentials) {
   })
 }
 
+export function loginAdmin(credentials) {
+  return request('/api/auth/admin/login', {
+    method: 'POST',
+    body: JSON.stringify(credentials),
+  })
+}
+
 export function logoutCandidate() {
   return request('/api/auth/logout', {
     method: 'POST',
+  })
+}
+
+export function fetchAdminDashboard() {
+  return request('/api/admin/dashboard')
+}
+
+export function fetchAdminSubmissions(params = {}) {
+  const searchParams = new URLSearchParams()
+
+  if (params.page) {
+    searchParams.set('page', String(params.page))
+  }
+
+  if (params.limit) {
+    searchParams.set('limit', String(params.limit))
+  }
+
+  if (params.query) {
+    searchParams.set('query', params.query)
+  }
+
+  if (params.status && params.status !== 'all') {
+    searchParams.set('status', params.status)
+  }
+
+  const queryString = searchParams.toString()
+
+  return request(`/api/admin/submissions${queryString ? `?${queryString}` : ''}`)
+}
+
+export function changeAdminPassword(payload) {
+  return request('/api/auth/admin/password', {
+    method: 'POST',
+    body: JSON.stringify(payload),
   })
 }
 
