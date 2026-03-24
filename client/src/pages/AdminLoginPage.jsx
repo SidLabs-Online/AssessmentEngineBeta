@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { ADMIN_LOGIN_HINT, BRAND_LINE } from '../config/constants'
+import { BRAND_LINE } from '../config/constants'
 import BrandMark from '../components/BrandMark'
 import { useAuth } from '../context/useAuth'
 import { validateLoginForm } from '../utils/loginValidation'
@@ -10,7 +10,7 @@ function AdminLoginPage() {
   const location = useLocation()
   const { isAuthenticated, isAuthLoading, loginAdmin, user } = useAuth()
   const [values, setValues] = useState({
-    email: ADMIN_LOGIN_HINT.email,
+    email: '',
     password: '',
   })
   const [errors, setErrors] = useState({})
@@ -88,13 +88,6 @@ function AdminLoginPage() {
             administration data.
           </p>
         </div>
-
-        <div className="auth-card__demo auth-card__demo--admin">
-          <p className="auth-card__demo-label">Admin identity</p>
-          <p>{ADMIN_LOGIN_HINT.email}</p>
-          <p>Password is provisioned securely from backend environment setup.</p>
-        </div>
-
         <form className="auth-form" noValidate onSubmit={handleSubmit}>
           <label className="field">
             <span>Admin email</span>
@@ -103,7 +96,7 @@ function AdminLoginPage() {
               className={errors.email ? 'input input--error' : 'input'}
               name="email"
               onChange={handleChange}
-              placeholder="evaluator@sidlabs.net"
+              placeholder="Enter your admin email"
               type="email"
               value={values.email}
             />

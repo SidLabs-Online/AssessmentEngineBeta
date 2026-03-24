@@ -13,6 +13,7 @@ The app currently supports:
 - MongoDB-backed submission storage
 - thank-you and exit flow
 - shared SidLabs footer, contact block, and CSS-built brand treatment
+ - shared SidLabs footer, contact block, and exact SidLabs logo treatment
 
 ## Project Overview
 
@@ -34,7 +35,7 @@ The current implementation prioritizes:
 - Context-based state for auth and assessment session data
 - Plain CSS with shared design tokens in `theme.css`
 - JSON-backed assessment definition loaded from local data
-- shared layout branding with a CSS-rendered SidLabs mark and responsive footer
+- shared layout branding with the exact SidLabs logo and responsive footer
 
 ### Backend
 
@@ -239,7 +240,7 @@ npm run lint
 ## Branding And Footer Notes
 
 The frontend now includes:
-- a CSS-built SidLabs `SL` brand mark used across auth and in-app shells
+- the exact SidLabs logo embedded across auth and in-app shells
 - a shared footer rendered across the app
 - responsive footer/contact blocks tuned for mobile, tablet, and desktop
 
@@ -291,6 +292,9 @@ Admin seed values:
 
 Current default admin identity:
 - `evaluator@sidlabs.net`
+
+Current local admin seed password:
+- `SidLabsAdmin!2026`
 
 Behavior:
 - the admin account is seeded on server startup when MongoDB is connected

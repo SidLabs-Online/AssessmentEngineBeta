@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { BRAND_LINE, DEMO_CREDENTIAL_HINT } from '../config/constants'
+import { BRAND_LINE } from '../config/constants'
 import BrandMark from '../components/BrandMark'
 import { useAuth } from '../context/useAuth'
 import { validateLoginForm } from '../utils/loginValidation'
@@ -84,13 +84,6 @@ function LoginPage() {
             Sign in with your assigned assessment credentials to continue.
           </p>
         </div>
-
-        <div className="auth-card__demo">
-          <p className="auth-card__demo-label">Demo credentials</p>
-          <p>{DEMO_CREDENTIAL_HINT.email}</p>
-          <p>{DEMO_CREDENTIAL_HINT.password}</p>
-        </div>
-
         <form className="auth-form" noValidate onSubmit={handleSubmit}>
           <label className="field">
             <span>Email address</span>
