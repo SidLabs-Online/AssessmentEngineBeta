@@ -15,11 +15,13 @@ export function verifyAuthToken(token) {
 }
 
 export function getAuthCookieOptions() {
+  const isProd = env.nodeEnv === 'production'
+
   return {
     httpOnly: true,
     maxAge: 8 * 60 * 60 * 1000,
-    sameSite: 'lax',
-    secure: env.nodeEnv === 'production',
+    sameSite: isProd ? 'none' : 'lax',
+    secure: isProd,
   }
 }
 

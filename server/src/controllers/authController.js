@@ -60,12 +60,18 @@ export async function loginAdmin(request, response) {
 
   const validationError = validateLoginInput(request.body)
 
+  console.log('Validation error:', validationError) // Debug log
+  console.log('Request body:', request.body) // Debug log
+  
+
   if (validationError) {
     console.warn('[server] admin login failure: validation')
     return response.status(400).json({
       message: validationError,
     })
   }
+
+  console.log
 
   const result = await authenticateAdmin(request.body)
 
