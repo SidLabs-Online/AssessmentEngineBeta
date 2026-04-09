@@ -203,8 +203,10 @@ function AdminSubmissionsPage() {
                   value={formState.status}
                 >
                   <option value="all">All statuses</option>
-                  <option value="manual_submit">Completed manually</option>
-                  <option value="timer_expired">Expired on timer</option>
+  <option value="manual_submit">Completed manually</option>
+  <option value="timer_expired">Expired on timer</option>
+  <option value="integrity_violation_limit">Security violation</option>
+  <option value="partial">Partial / Auto-saves</option>
                 </select>
               </label>
 
@@ -272,15 +274,15 @@ function AdminSubmissionsPage() {
                         <span>{item.assessmentId}</span>
                       </td>
                       <td>
-                        <span
-                          className={`dashboard-badge dashboard-badge--${
-                            item.completionStatus === 'Expired on timer'
-                              ? 'warning'
-                              : 'success'
-                          }`}
-                        >
-                          {item.completionStatus}
-                        </span>
+                       <span
+  className={`dashboard-badge dashboard-badge--${
+    item.completionStatus === 'Completed manually'
+      ? 'success'
+      : 'warning'
+  }`}
+>
+  {item.completionStatus}
+</span>
                       </td>
                       <td>{item.score}</td>
                       <td>{formatSubmissionTime(item.submissionTime)}</td>

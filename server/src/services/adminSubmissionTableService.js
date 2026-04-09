@@ -61,10 +61,18 @@ export async function getAdminSubmissionTableData(searchParams = {}) {
 function normalizeFilters(searchParams) {
   const requestedLimit = Number.parseInt(searchParams.limit, 10)
   const requestedPage = Number.parseInt(searchParams.page, 10)
-  const normalizedStatus =
-    searchParams.status === 'timer_expired' || searchParams.status === 'manual_submit'
-      ? searchParams.status
-      : 'all'
+  
+  // UPDATED: Allow integrity_violation_limit and partial in normalization
+  const validStatuses = [
+    'manual_submit', 
+    'timer_expired', 
+    'integrity_violation_limit', 
+    'partial'
+  ]
+  
+  const normalizedStatus = validStatuses.includes(searchParams.status)
+    ? searchParams.status
+    : 'all'
 
   return {
     limit:
@@ -80,8 +88,15 @@ function normalizeFilters(searchParams) {
 function buildMongoFilter(filters) {
   const mongoFilter = {}
 
+  // UPDATED: Handle partial category vs specific reasons
   if (filters.status !== 'all') {
-    mongoFilter.reason = filters.status
+    if (filters.status === 'partial') {
+      mongoFilter.reason = { 
+        $in: ['user_signout', 'user_left_tab_or_window', 'user_closed_tab_or_browser', 'auto_save'] 
+      }
+    } else {
+      mongoFilter.reason = filters.status
+    }
   }
 
   if (filters.query) {
@@ -109,13 +124,15 @@ function toAdminTableRow(submission) {
     candidateEmail: submission.candidateDetails?.email || '',
     candidateName: submission.candidateDetails?.fullName || 'Unnamed candidate',
     completionStatus: 
-  submission.reason === 'manual_submit' ? 'Completed manually' :
-  submission.reason === 'timer_expired' ? 'Expired on timer' :
-  submission.reason === 'integrity_violation_limit' ? 'Terminated: Security violations' :
-  submission.reason === 'user_signout' ? 'Partial: Signed out' :
-  submission.reason === 'user_left_tab_or_window' ? 'Partial: Tab switched' :
-  submission.reason === 'user_closed_tab_or_browser' ? 'Partial: Browser closed' :
-  'Auto-saved progress',
+      submission.reason === 'manual_submit' ? 'Completed manually' :
+      submission.reason === 'timer_expired' ? 'Expired on timer' :
+      submission.reason === 'integrity_violation_limit' ? 'Security violation' :
+      submission.reason === 'user_signout' ? 'Partial: Signed out' :
+      submission.reason === 'user_left_tab_or_window' ? 'Partial: Tab switched' :
+      submission.reason === 'user_closed_tab_or_browser' ? 'Partial: Browser closed' :
+      submission.reason === 'auto_save' ? 'Auto-saved progress' :
+      submission.reason?.startsWith('violation_') ? 'Partial: Security warning' :
+      'Incomplete attempt',
     location: submission.candidateDetails?.location || '',
     roleApplied: submission.candidateDetails?.roleApplied || '',
     score,
@@ -146,6 +163,7 @@ function calculateScore(answers) {
       continue
     }
 
+    // Check if the provided answer is in the correct answers array
     if (question.ans.includes(answer)) {
       score += assessmentDefinition.scoring.correct || question.score || 0
       continue

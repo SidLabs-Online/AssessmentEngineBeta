@@ -228,12 +228,14 @@ function AdminDashboardPage() {
                       <td>{submission.location || 'Not provided'}</td>
                       <td>
                         <span
-                          className={`dashboard-badge dashboard-badge--${
-                            submission.reason === 'timer_expired' ? 'warning' : 'success'
-                          }`}
-                        >
-                          {submission.statusLabel}
-                        </span>
+  className={`dashboard-badge dashboard-badge--${
+    submission.completionStatus === 'Completed manually'
+      ? 'success'
+      : 'warning'
+  }`}
+>
+  {submission.statusLabel}
+</span>
                       </td>
                       <td>{formatDashboardTimestamp(submission.submittedAt)}</td>
                     </tr>
