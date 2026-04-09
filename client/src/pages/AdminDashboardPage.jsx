@@ -229,7 +229,7 @@ function AdminDashboardPage() {
                       <td>
                         <span
   className={`dashboard-badge dashboard-badge--${
-    submission.completionStatus === 'Completed manually'
+    submission.reason === 'Completed manually'
       ? 'success'
       : 'warning'
   }`}
