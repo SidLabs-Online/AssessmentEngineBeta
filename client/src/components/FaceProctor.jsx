@@ -27,15 +27,17 @@ export default function FaceProctor({ onDetection }) {
     return () => { isMounted = false; };
   }, []);
 
-  // 2. Setup Camera & Audio
+  // 2. Setup Camera & Optimized Audio
   useEffect(() => {
     let isMounted = true;
+    let audioFramesAboveThreshold = 0;
+    let lastVoiceViolationTime = 0;
 
     async function setup() {
       try {
         const s = await navigator.mediaDevices.getUserMedia({
           video: { width: 640, height: 480 },
-          audio: true,
+          audio: true, // Request audio
         });
 
         if (!isMounted) { 
@@ -46,7 +48,7 @@ export default function FaceProctor({ onDetection }) {
         streamRef.current = s;
         if (videoRef.current) videoRef.current.srcObject = s;
 
-        // Audio Level Detection
+        // Audio Level Detection Setup
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         audioCtxRef.current = ctx;
         const analyzer = ctx.createAnalyser();
@@ -55,15 +57,39 @@ export default function FaceProctor({ onDetection }) {
 
         const checkAudio = () => {
           if (!streamRef.current || !isMounted) return;
+          
           analyzer.getByteFrequencyData(data);
           const avg = data.reduce((a, b) => a + b, 0) / data.length;
           
-          if (avg > 45) {
-            latestDetectionCallback.current('voice', 'Noise/Voice detected! Please maintain silence.');
+          const now = Date.now();
+
+          // THRESHOLD: Increased from 45 to 65 to ignore fans and ACs.
+          if (avg > 65) {
+            audioFramesAboveThreshold++;
+            
+            // SUSTAINED NOISE: Requires ~1.5 seconds of continuous loud noise to trigger
+            // (60 frames per second * 1.5s = ~90 frames)
+            if (audioFramesAboveThreshold > 90) {
+              
+              // COOLDOWN: 10 Seconds gap before throwing another voice warning
+              if (now - lastVoiceViolationTime > 10000) {
+                latestDetectionCallback.current('voice', 'Continuous talking/noise detected! Please maintain silence.');
+                lastVoiceViolationTime = now;
+              }
+              
+              // Reset the frame counter after a trigger
+              audioFramesAboveThreshold = 0; 
+            }
+          } else {
+            // If the volume drops below 65 (even for a split second), reset the counter.
+            // This ensures brief coughs, sneezes, or dropping a pen don't trigger it.
+            audioFramesAboveThreshold = 0;
           }
+          
           requestAnimationFrame(checkAudio);
         };
         checkAudio();
+
       } catch (e) {
         console.error('Proctor setup failed:', e);
       }
@@ -94,7 +120,6 @@ export default function FaceProctor({ onDetection }) {
     async function scanFace() {
       if (!isMounted) return;
 
-      // If video isn't ready yet, wait 100ms and try again immediately
       if (!videoRef.current || videoRef.current.readyState !== 4) {
         setTimeout(scanFace, 100);
         return;
@@ -158,11 +183,10 @@ export default function FaceProctor({ onDetection }) {
         console.warn("Face scan frame dropped", err);
       }
 
-      // Schedule next scan instantly after this one finishes (400ms delay)
       if (isMounted) setTimeout(scanFace, 400);
     }
 
-    scanFace(); // <-- THIS IS THE FIX: Starts the loop INSTANTLY on mount
+    scanFace(); 
 
     return () => { isMounted = false; };
   }, [models.face]);
@@ -194,11 +218,10 @@ export default function FaceProctor({ onDetection }) {
         console.warn("Object scan frame dropped", err);
       }
 
-      // Schedule next scan instantly after this one finishes (500ms delay)
       if (isMounted) setTimeout(scanObjects, 500);
     }
 
-    scanObjects(); // <-- THIS IS THE FIX: Starts instantly
+    scanObjects();
 
     return () => { isMounted = false; };
   }, [models.obj]);
