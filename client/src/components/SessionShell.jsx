@@ -20,23 +20,18 @@ function SessionShell({
   const isSubmitting = completionState.status === 'submitting'
 
   async function handleLogout() {
-    if (isSubmitting) {
-      return
-    }
+    if (isSubmitting) return
 
-    // 1. Capture progress immediately if we are in an active assessment
+    // Capture progress immediately if we are in an active assessment
     if (isAssessmentPage && assessmentSession && assessmentSession.status !== 'submitted') {
       autoSubmit('user_signout')
     }
 
-    // 2. Programmatically exit fullscreen if active
+    // Force exit fullscreen immediately before navigating away
     if (document.fullscreenElement) {
-      document.exitFullscreen().catch(() => {
-        /* Ignore errors if already exiting */
-      })
+      document.exitFullscreen().catch(() => {})
     }
 
-    // 3. Perform auth logout
     await logout()
     navigate(logoutRedirectTo, { replace: true })
   }
@@ -79,4 +74,4 @@ function SessionShell({
   )
 }
 
-export default SessionShell;
+export default SessionShell

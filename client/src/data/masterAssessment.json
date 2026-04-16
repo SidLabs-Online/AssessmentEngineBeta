@@ -2,7 +2,7 @@
   "assessment_meta": {
     "title": "Platoputer Research Assistant Pre-Assessment",
     "total_questions": 25,
-    "time_limit_minutes": 25,
+    "time_limit_minutes":2,
     "scoring": {
       "correct": 1,
       "incorrect": -1,

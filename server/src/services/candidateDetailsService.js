@@ -3,7 +3,7 @@ import { AssessmentSubmissionModel } from '../models/assessmentSubmissionModel.j
 const EMAIL_PATTERN =
   /^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-.]*)[A-Za-z0-9_+-]@([A-Za-z0-9-]+\.)+[A-Za-z]{2,}$/;
 
-export async function validateCandidateDetails(details = {}) {
+export async function validateCandidateDetails(details = {}, checkDuplicates = true) {
   const errors = {};
   const normalized = {
     age: String(details.age || '').trim(),
@@ -50,7 +50,7 @@ export async function validateCandidateDetails(details = {}) {
   }
 
   // 2. Database Check: Duplicate Email (Only if email format is already valid)
-  if (!errors.email) {
+  if (checkDuplicates && !errors.email) {
     try {
       const existingSubmission = await AssessmentSubmissionModel.findOne({
         'candidateDetails.email': normalized.email

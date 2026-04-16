@@ -1,6 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 export function useSecurityHooks(isTestActive, recordViolation, syncProgress) {
+
+    const fullscreenDebounce = useRef(null);
+
   useEffect(() => {
     if (!isTestActive) return;
 
@@ -40,11 +43,18 @@ export function useSecurityHooks(isTestActive, recordViolation, syncProgress) {
     };
 
     // 4. Detect Fullscreen Exit
-    const handleFullscreenChange = () => {
+
+const handleFullscreenChange = () => {
+  if (!document.fullscreenElement) {
+    clearTimeout(fullscreenDebounce.current);
+    fullscreenDebounce.current = setTimeout(() => {
+      // Only fire if still not fullscreen after 1.5s (ignores re-entry)
       if (!document.fullscreenElement) {
         recordViolation('fullscreen_exit', 'Warning: Full-screen mode disabled. Please return to full-screen to continue.');
       }
-    };
+    }, 1500);
+  }
+};
 
     // 5. Final Background Sync on Window Close
     const handleUnload = () => {

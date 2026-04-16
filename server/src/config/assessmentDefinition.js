@@ -12,6 +12,7 @@ const masterAssessmentJson = JSON.parse(
   fs.readFileSync(masterAssessmentPath, 'utf8'),
 )
 
+
 const questionMap = masterAssessmentJson.questions.reduce((accumulator, question) => {
   accumulator[String(question.id)] = {
     id: question.id,
