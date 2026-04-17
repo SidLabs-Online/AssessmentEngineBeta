@@ -6,8 +6,11 @@ import { validateCandidateDetails } from './candidateDetailsService.js'
 const submissionTracker = new Set()
 const FINAL_REASONS = ['manual_submit', 'timer_expired', 'integrity_violation_limit']
 
+
+
 export async function validateSubmissionPayload(payload) {
   const errors = {}
+  const main={ payload, errors };
   if (!payload || typeof payload !== 'object') return { errors: { p: 'Invalid' }, isValid: false }
 
   const candidateResult = await validateCandidateDetails(payload.candidateDetails, false)
