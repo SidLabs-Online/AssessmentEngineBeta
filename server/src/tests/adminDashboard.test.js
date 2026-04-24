@@ -58,7 +58,7 @@ test('GET /api/admin/dashboard returns dashboard summary data for an admin', asy
       return {
         latestSubmissions: [
           {
-            candidateEmail: 'candidate@sidlabs.com',
+            candidateEmail: 'candidate@gmail.com',
             candidateName: 'Sid Demo',
             location: 'Bengaluru',
             reason: 'manual_submit',
@@ -158,8 +158,8 @@ test('GET /api/admin/dashboard rejects candidate access', async () => {
   const app = createApp()
 
   const candidateLoginResponse = await request(app).post('/api/auth/login').send({
-    email: 'candidate@sidlabs.com',
-    password: 'SidLabs@2026',
+    email: 'candidate@gmail.com',
+    password: 'Candidate@2026',
   })
 
   const candidateCookie = candidateLoginResponse.headers['set-cookie'][0]

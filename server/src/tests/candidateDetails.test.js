@@ -5,8 +5,8 @@ import { createApp } from '../app.js'
 
 async function loginAndGetCookie(app) {
   const response = await request(app).post('/api/auth/login').send({
-    email: 'candidate@sidlabs.com',
-    password: 'SidLabs@2026',
+    email: 'candidate@gmail.com',
+    password: 'Candidate@2026',
   })
 
   return response.headers['set-cookie'][0]
@@ -21,14 +21,14 @@ test('POST /api/candidate-details/validate accepts valid candidate details', asy
     .set('Cookie', cookie)
     .send({
       age: '24',
-      email: 'Candidate@SidLabs.com',
+      email: 'candidate@gmail.com',
       fullName: 'Sid Demo',
       location: 'Bengaluru',
       roleApplied: 'Product Analyst',
     })
 
   assert.equal(response.statusCode, 200)
-  assert.equal(response.body.candidateDetails.email, 'candidate@sidlabs.com')
+  assert.equal(response.body.candidateDetails.email, 'candidate@gmail.com')
 })
 
 test('POST /api/candidate-details/validate rejects invalid email values', async () => {

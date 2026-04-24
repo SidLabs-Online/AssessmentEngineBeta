@@ -7,8 +7,8 @@ import { resetSubmissionTracker } from '../services/submissionService.js'
 
 async function loginAndGetCookie(app) {
   const response = await request(app).post('/api/auth/login').send({
-    email: 'candidate@sidlabs.com',
-    password: 'SidLabs@2026',
+    email: 'candidate@gmail.com',
+    password: 'Candidate@2026',
   })
 
   return response.headers['set-cookie'][0]
@@ -30,7 +30,7 @@ function buildValidPayload() {
     assessmentId: assessmentDefinition.metadata.assessmentId,
     candidateDetails: {
       age: '24',
-      email: 'candidate@sidlabs.com',
+      email: 'candidate@gmail.com',
       fullName: 'Sid Demo',
       location: 'Bengaluru',
       roleApplied: 'Product Analyst',

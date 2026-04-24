@@ -17,12 +17,12 @@ test('POST /api/auth/login authenticates the seeded demo user', async () => {
   const app = createApp()
 
   const response = await request(app).post('/api/auth/login').send({
-    email: 'candidate@sidlabs.com',
-    password: 'SidLabs@2026',
+    email: 'candidate@gmail.com',
+    password: 'Candidate@2026',
   })
 
   assert.equal(response.statusCode, 200)
-  assert.equal(response.body.user.email, 'candidate@sidlabs.com')
+  assert.equal(response.body.user.email, 'candidate@gmail.com')
   assert.match(response.headers['set-cookie'][0], /assessment_token=/)
 })
 
@@ -30,7 +30,7 @@ test('POST /api/auth/login rejects invalid credentials', async () => {
   const app = createApp()
 
   const response = await request(app).post('/api/auth/login').send({
-    email: 'candidate@sidlabs.com',
+    email: 'candidate@gmail.com',
     password: 'wrong-pass',
   })
 
@@ -107,8 +107,8 @@ test('GET /api/auth/admin/session rejects non-admin authenticated users', async 
   const app = createApp()
 
   const loginResponse = await request(app).post('/api/auth/login').send({
-    email: 'candidate@sidlabs.com',
-    password: 'SidLabs@2026',
+    email: 'candidate@gmail.com',
+    password: 'Candidate@2026',
   })
 
   const cookie = loginResponse.headers['set-cookie'][0]

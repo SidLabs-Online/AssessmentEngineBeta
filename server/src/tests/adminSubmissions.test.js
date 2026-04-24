@@ -66,7 +66,7 @@ test('GET /api/admin/submissions returns paginated table data for admin users', 
           assessmentId: 'platoputer-research-assistant-pre-assessment',
           candidateDetails: {
             age: '24',
-            email: 'candidate@sidlabs.com',
+            email: 'candidate@gmail.com',
             fullName: 'Sid Demo',
             location: 'Bengaluru',
             roleApplied: 'Research Analyst',
@@ -95,8 +95,8 @@ test('GET /api/admin/submissions rejects non-admin users', async () => {
   const app = createApp()
 
   const candidateLoginResponse = await request(app).post('/api/auth/login').send({
-    email: 'candidate@sidlabs.com',
-    password: 'SidLabs@2026',
+    email: 'candidate@gmail.com',
+    password: 'Candidate@2026',
   })
 
   const candidateCookie = candidateLoginResponse.headers['set-cookie'][0]

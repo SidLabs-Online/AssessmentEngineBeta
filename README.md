@@ -133,8 +133,8 @@ Notes:
 
 ### Candidate
 
-- Email: `candidate@sidlabs.com`
-- Password: `SidLabs@2026`
+- Email: `candidate@gmail.com`
+- Password: `Candidate@2026`
 
 These are the current values in the local project env and the backend accepts them.
 
